@@ -65,15 +65,30 @@ public class WatchDAO extends AbstractDAO<Watch> {
                         "%" + query + "%",});
         }
 
-        private List<WatchView> findAll(String query, boolean outOfStockOnly) throws SQLException {
+        private List<WatchView> findAll(String query, boolean outOfStockOnly, boolean sapHetHang) throws SQLException {
+            String additionCondition = "";
+            
+            if (outOfStockOnly && !sapHetHang) {
+                additionCondition += " AND(quantity = 0)";
+            }
+            
+            if (outOfStockOnly && sapHetHang) {
+                additionCondition += " AND (quantity < 10)";
+            }
+            
+            if (!outOfStockOnly && sapHetHang) {
+                additionCondition += " AND (quantity > 0 && quantity < 10)";
+            }
+            
             if (query == null || "".equals(query)) {
                 return watchViewDAO.fetchAllFromSQL(
                         "SELECT w.id id, w.title title, u.username username, w.unitPrice unitPrice, w.quantity quantity, v.title vendorTitle, c.title categoryTitle "
                         + "FROM watches w "
                         + "INNER JOIN users u ON w.userId=u.id "
                         + "INNER JOIN vendors v ON w.vendorId=v.id "
-                        + "INNER JOIN categories c ON w.categoryId=c.id"
-                        + (outOfStockOnly ? " WHERE quantity = 0" : "")
+                        + "INNER JOIN categories c ON w.categoryId=c.id "
+                        + "WHERE 1=1" + additionCondition
+                        + " ORDER BY unitPrice DESC"
                 );
             }
 
@@ -82,7 +97,8 @@ public class WatchDAO extends AbstractDAO<Watch> {
                     + "INNER JOIN users u ON w.userId=u.id "
                     + "INNER JOIN vendors v ON w.vendorId=v.id "
                     + "INNER JOIN categories c ON w.categoryId=c.id "
-                    + "WHERE (w.title LIKE ? OR w.description LIKE ? OR v.title LIKE ? OR c.title LIKE ?) " + (outOfStockOnly ? "AND quantity=0" : ""), new Object[]{
+                    + "WHERE 1=1" + additionCondition
+                    + " AND (w.title LIKE ? OR w.description LIKE ? OR v.title LIKE ? OR c.title LIKE ?) ORDER BY unitPrice DESC", new Object[]{
                         "%" + query + "%",
                         "%" + query + "%",
                         "%" + query + "%",
@@ -102,8 +118,8 @@ public class WatchDAO extends AbstractDAO<Watch> {
         return watchViewDAO.findAll(query);
     }
 
-    public List<WatchView> findAll(String query, boolean outOfStockOnly) throws SQLException {
-        return watchViewDAO.findAll(query, outOfStockOnly);
+    public List<WatchView> findAll(String query, boolean outOfStockOnly, boolean sapHetHang) throws SQLException {
+        return watchViewDAO.findAll(query, outOfStockOnly, sapHetHang);
     }
 
     public ComboBoxModel<WatchView> buildComboBoxModel(boolean includeNoSelect) {

@@ -63,8 +63,8 @@ public class FrmWatchManage extends DataGridForm {
                     "Người nhập",
                     "Số lượng",
                     "Giá tiền",
+                    "Nhà cung cấp",
                     "Danh mục",
-                    "Nhà cung cấp"
                 }
         ));
     }
@@ -89,19 +89,21 @@ public class FrmWatchManage extends DataGridForm {
         txtSearchQuery = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         cbOutOfStock = new javax.swing.JCheckBox();
+        cbSapHet = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Quản lý đồng hồ");
 
         tblDataGrid.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null}
+                {}
             },
             new String [] {
-                "ID", "Username", "Owner"
+
             }
         ));
         tblDataGrid.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblDataGrid.getTableHeader().setReorderingAllowed(false);
         tblDataGrid.addInputMethodListener(new java.awt.event.InputMethodListener() {
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
                 tblDataGridCaretPositionChanged(evt);
@@ -177,16 +179,25 @@ public class FrmWatchManage extends DataGridForm {
             }
         });
 
+        cbSapHet.setText("Sắp hết");
+        cbSapHet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbSapHetActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cbOutOfStock)
+                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(68, 68, 68)
+                .addComponent(cbOutOfStock)
+                .addGap(18, 18, 18)
+                .addComponent(cbSapHet)
+                .addGap(33, 33, 33)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtSearchQuery, javax.swing.GroupLayout.PREFERRED_SIZE, 388, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -205,6 +216,7 @@ public class FrmWatchManage extends DataGridForm {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtSearchQuery, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1)
+                            .addComponent(cbSapHet)
                             .addComponent(cbOutOfStock))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))
@@ -275,6 +287,11 @@ public class FrmWatchManage extends DataGridForm {
         refresh(true);
     }//GEN-LAST:event_cbOutOfStockActionPerformed
 
+    private void cbSapHetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbSapHetActionPerformed
+        // TODO add your handling code here:
+        refresh(true);
+    }//GEN-LAST:event_cbSapHetActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -308,13 +325,14 @@ public class FrmWatchManage extends DataGridForm {
     public void load() throws Exception {
         refresh(true);
         setVisible(true);
-    }
+    } 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JCheckBox cbOutOfStock;
+    private javax.swing.JCheckBox cbSapHet;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar.Separator jSeparator2;
@@ -327,7 +345,7 @@ public class FrmWatchManage extends DataGridForm {
     @Override
     public void refresh(boolean reset) {
         try {
-            List<WatchView> items = WatchDAO.instance.findAll(txtSearchQuery.getText(), cbOutOfStock.isSelected());
+            List<WatchView> items = WatchDAO.instance.findAll(txtSearchQuery.getText(), cbOutOfStock.isSelected(), cbSapHet.isSelected());
 
             DefaultTableModel model = (DefaultTableModel) tblDataGrid.getModel();
             model.setRowCount(0);
